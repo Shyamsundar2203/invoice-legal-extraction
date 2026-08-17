@@ -1,153 +1,229 @@
-# Automated Invoice & Legal Document Extraction
+# 📄 Automated Invoice & Legal Document Extraction Pipeline
 
-AI-based multimodal document processing pipeline (OCR + Layout + NLP) that
-extracts key-value pairs, tables, and clauses from scanned invoices and legal
-contracts, flags low-confidence fields for human review, and outputs
-structured JSON, an annotated overlay PDF, and a CSV batch summary.
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)](https://www.python.org/)
+[![Tesseract OCR](https://img.shields.io/badge/Tesseract_OCR-5.0%2B-green?style=for-the-badge)](https://github.com/tesseract-ocr/tesseract)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-Reference approach for the trainable model: [SmolVLM invoice extraction](https://www.kaggle.com/code/vermaavi/invoice-data-extraction-using-smolvlm)
-(Kaggle), adapted into `training/train_smolvlm_invoice.py`, plus a
-LayoutLMv3 alternative for higher-precision structured extraction.
+An end-to-end AI-powered document processing pipeline (OCR + Layout Analysis + NLP Extraction) that extracts structured key-value pairs, line item tables, and contract clauses from scanned invoices and legal documents. It features automated confidence scoring, bounding-box visual overlays, human-in-the-loop review flags, batch CSV reports, and a clean Web UI.
 
+---
+
+## 🏛️ Pipeline Architecture
+
+```text
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌────────────────┐     ┌──────────────┐
+│  Scanned PDF │ ──▶ │ Preprocess   │ ──▶ │ Tesseract    │ ──▶ │ Field/Clause   │ ──▶ │ Confidence   │
+│  or Image    │     │ Deskew/Clean │     │ OCR          │     │ Extraction     │     │ Scoring      │
+└──────────────┘     └──────────────┘     └──────────────┘     └────────────────┘     └──────┬───────┘
+                                                                                             │
+                                     ┌───────────────────────────────────────────────────────┘
+                                     ▼
+                    ┌───────────────────────────────────┐
+                    │  • Structured JSON Data           │
+                    │  • Bounding-box Overlay PDF       │
+                    │  • Batch Summary CSV              │
+                    │  • Human Review Flag (<85% conf)  │
+                    └───────────────────────────────────┘
 ```
-┌─────────────┐   ┌──────────────┐   ┌─────────┐   ┌────────────────┐   ┌────────────┐
-│  PDF/Image  │──▶│ Preprocess   │──▶│  OCR    │──▶│ Field Extract  │──▶│ Confidence │
-│   upload    │   │(deskew/clean)│   │(Tesseract)│  │(rules or ML)   │   │  scoring   │
-└─────────────┘   └──────────────┘   └─────────┘   └────────────────┘   └─────┬──────┘
-                                                                                │
-                                          ┌─────────────────────────────────────┘
-                                          ▼
-                          JSON  +  overlay PDF  +  CSV summary  +  human review flag
-```
 
-## What's in this repo
+---
 
-```
+## ✨ Key Features
+
+- **Multimodal Ingestion**: Supports `.pdf`, `.png`, `.jpg`, `.jpeg`, and `.tiff`.
+- **Intelligent Preprocessing**: Automated page deskewing, noise filtering, and adaptive thresholding for clear OCR scanning.
+- **Invoice Extraction**: Extracts invoice number, issue date, due date, vendor, buyer, subtotal, taxes, grand total, and tabular line items.
+- **Legal Contract Extraction**: Identifies contracting parties, effective dates, governing jurisdiction, term length, and key clauses (*termination, confidentiality, liability, indemnification, etc.*).
+- **Confidence Scoring & Flagging**: Evaluates per-field confidence; automatically flags documents requiring human review.
+- **Visual PDF Overlays**: Highlights detected words and bounding boxes in a generated overlay PDF.
+- **Batch Processing**: Process multiple files in one request and export a consolidated CSV summary.
+- **Interactive Web UI & Swagger Docs**: Easy-to-use web interface and auto-generated OpenAPI documentation.
+
+---
+
+## 📁 Repository Structure
+
+```text
 invoice-legal-extraction/
-├── backend/              FastAPI service — the actual working pipeline
+├── backend/
 │   ├── app/
-│   │   ├── pipeline/     preprocess → ocr → extract → confidence → overlay
-│   │   ├── routers/      /extract, /batch, /batch/summary.csv
-│   │   ├── main.py
-│   │   └── schemas.py    Pydantic output contracts
-│   ├── tests/
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/             Static HTML/JS upload + results UI
-├── training/             Colab/Kaggle scripts to train a real ML model
-│   ├── train_layoutlmv3.py
-│   ├── train_smolvlm_invoice.py
-│   ├── prepare_dataset.py
-│   ├── evaluate.py
-│   └── README.md         full training walkthrough
-├── data/                 raw/ processed/ sample/ (sample invoice included)
-├── scripts/run_demo.sh   one-command smoke test
-└── docker-compose.yml
+│   │   ├── pipeline/          # Preprocessing, OCR, extraction & scoring logic
+│   │   │   ├── preprocess.py  # Image cleaning & deskewing
+│   │   │   ├── ocr.py         # Cross-platform Tesseract wrapper
+│   │   │   ├── extract.py     # Rule-based & ML extractor adapters
+│   │   │   ├── confidence.py  # Confidence scoring heuristics
+│   │   │   ├── overlay.py     # PDF bounding-box generator
+│   │   │   └── orchestrator.py# End-to-end pipeline pipeline coordinator
+│   │   ├── routers/           # /extract and /batch API endpoints
+│   │   ├── schemas.py         # Pydantic JSON contracts
+│   │   ├── config.py          # Environment settings
+│   │   └── main.py            # FastAPI application entrypoint
+│   ├── tests/                 # Pytest test suite
+│   ├── requirements.txt       # Backend dependencies
+│   └── Dockerfile             # Container definition
+├── frontend/                  # Static Web UI (HTML, CSS, JS)
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+├── data/
+│   ├── sample/                # Bundled test sample (sample_invoice.png)
+│   ├── raw/                   # Ingested upload directory
+│   └── processed/             # Output JSON results & overlay PDFs
+├── training/                  # Model fine-tuning (LayoutLMv3 & SmolVLM)
+├── run_app.bat                # ⚡ 1-Click Windows Launcher
+├── docker-compose.yml         # Containerized local setup
+└── README.md
 ```
 
-## Quick start (rule-based baseline — works immediately, no GPU/model needed)
+---
 
-### Option A — Docker (recommended)
-```bash
-git clone <your-repo-url>.git
-cd invoice-legal-extraction
-docker compose up --build
-```
-- Backend API: http://localhost:8000/docs
-- Frontend UI: http://localhost:5173
+## 🚀 Quick Start (Local Setup)
 
-### Option B — Local Python
+### Option 1: ⚡ 1-Click Windows Launcher (Easiest)
+If you are on Windows, simply double-click **`run_app.bat`** in the project root folder.
+- Automatically starts the FastAPI backend on `http://127.0.0.1:8000`
+- Starts the Frontend on `http://127.0.0.1:3000`
+- Opens the application directly in your default browser!
 
-**Windows:** run the setup script from inside `backend/`:
-```
-scripts\setup_windows.bat
-```
-This creates a virtual environment and installs everything for you. Then:
-```
-venv\Scripts\activate
-uvicorn app.main:app --reload
-```
+---
 
-**Mac/Linux:**
-```bash
+### Option 2: Run via Terminal
+
+#### 1. Prerequisites
+- **Python 3.10 - 3.12+**
+- **Tesseract OCR**:
+  - **Windows**: [Download Tesseract Installer](https://github.com/UB-Mannheim/tesseract/wiki) (Standard install at `C:\Program Files\Tesseract-OCR`)
+  - **Ubuntu / Debian**: `sudo apt-get update && sudo apt-get install -y tesseract-ocr`
+  - **macOS**: `brew install tesseract`
+
+#### 2. Install Dependencies
+```powershell
+# Navigate to backend
 cd backend
 pip install -r requirements.txt
-# Tesseract binary is required by pytesseract:
-#   Ubuntu/Debian: sudo apt-get install tesseract-ocr
-#   macOS:          brew install tesseract
-uvicorn app.main:app --reload
 ```
 
-> **Python version note:** use Python 3.10–3.12 if you can. Very new Python
-> releases (3.13/3.14) sometimes don't have pre-built wheels yet for
-> numpy/OpenCV/PyMuPDF, which makes pip try to compile them from source and
-> fail without a C/C++ compiler. `requirements.txt` intentionally leaves
-> versions unpinned so pip grabs the newest compatible wheel automatically —
-> if install still fails, installing Python 3.11 side-by-side and creating
-> the venv with `py -3.11 -m venv venv` is the most reliable fix on Windows.
-Then open `frontend/index.html` directly in a browser (it calls
-`http://localhost:8000` by default — edit `API_BASE` in `frontend/app.js`
-if you're running the backend elsewhere).
+#### 3. Start Backend Server
+```powershell
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+- API Docs will be available at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-### One-command demo
+#### 4. Start Frontend
+In a new terminal:
+```powershell
+cd frontend
+python -m http.server 3000
+```
+- Web UI will be live at: [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+---
+
+### Option 3: Run with Docker Compose
 ```bash
-bash scripts/run_demo.sh
+docker compose up --build
 ```
-Runs the bundled `data/sample/sample_invoice.png` through the full pipeline
-and prints the extracted JSON.
+- Backend API: `http://localhost:8000/docs`
+- Frontend UI: `http://localhost:5173`
 
-## API
+---
+
+## 🌐 How to Run Globally (Public Link Sharing)
+
+If you want to share a live link of your application with clients, colleagues, or anyone on the internet without running it only on `localhost`, choose any of these free methods:
+
+### Method A: Instant 1-Minute Public Tunnel (Using Ngrok)
+You can share your locally running app across the internet instantly:
+1. Download [ngrok](https://ngrok.com/download) (Free).
+2. Open terminal and run:
+   ```bash
+   ngrok http 3000
+   ```
+3. Ngrok will give you a public HTTPS URL (e.g. `https://xyz.ngrok-free.app`) that anyone in the world can open to use your app!
+
+---
+
+### Method B: Deploy Free on Render / Railway (Cloud Hosting)
+1. Push this repository to your GitHub account (`https://github.com/Shyamsundar2203/invoice-legal-extraction`).
+2. Log into [Render.com](https://render.com) or [Railway.app](https://railway.app).
+3. Click **New Web Service** and select your GitHub repository.
+4. Set Environment to **Docker** (Render will use the included `backend/Dockerfile`).
+5. Click **Deploy** — your API will get a permanent public link (`https://invoice-extractor.onrender.com`).
+
+---
+
+### Method C: Free Hosting on Hugging Face Spaces
+1. Create a free account on [Hugging Face](https://huggingface.co/).
+2. Create a new Space, select **Docker** as SDK.
+3. Link your GitHub repo or push code to Space Git repository.
+4. Your document extractor will be live permanently with a public web link.
+
+---
+
+## 🧪 Testing Document Extraction
+
+1. Open the Web UI at **[http://127.0.0.1:3000](http://127.0.0.1:3000)**.
+2. Select the included test image:
+   `data/sample/sample_invoice.png`
+3. Click **"Extract Fields"**.
+4. View the real-time extraction results:
+
+```json
+{
+  "document_id": "01174f8c",
+  "filename": "sample_invoice.png",
+  "doc_type": "invoice",
+  "overall_confidence": 0.65,
+  "data": {
+    "doc_type": "invoice",
+    "invoice_number": { "value": "INV-2026-0458", "confidence": 0.7 },
+    "invoice_date": { "value": "08/15/2026", "confidence": 0.7 },
+    "due_date": { "value": "09/14/2026", "confidence": 0.7 },
+    "vendor_name": { "value": "Acme Supplies Inc.", "confidence": 0.55 },
+    "buyer_name": { "value": "Rajasthan Traders Pvt Ltd", "confidence": 0.55 },
+    "subtotal": { "value": "450.00", "confidence": 0.7 },
+    "tax_amount": { "value": "45.00", "confidence": 0.7 },
+    "grand_total": { "value": "495.00", "confidence": 0.7 },
+    "line_items": [
+      { "description": "Widget A", "quantity": "10", "unit_price": "25.00", "total": "250.00" },
+      { "description": "Widget B", "quantity": "5", "unit_price": "40.00", "total": "200.00" }
+    ]
+  }
+}
+```
+
+---
+
+## 📡 REST API Reference
 
 | Endpoint | Method | Description |
-|---|---|---|
-| `/extract?doc_type=invoice\|contract` | POST (multipart file) | Extract one document, returns JSON |
-| `/extract/{document_id}/overlay` | GET | Download the bounding-box overlay PDF |
-| `/batch?doc_type=invoice\|contract` | POST (multipart files[]) | Extract multiple documents |
-| `/batch/summary.csv` | GET | CSV report of every processed document |
-| `/health` | GET | Liveness check |
+| :--- | :--- | :--- |
+| `POST /extract?doc_type=invoice\|contract` | `POST` | Upload single document (PDF/Image) & extract structured fields |
+| `GET /extract/{document_id}/overlay` | `GET` | Download bounding-box visual overlay PDF |
+| `POST /batch?doc_type=invoice\|contract` | `POST` | Process multiple documents simultaneously |
+| `GET /batch/summary.csv` | `GET` | Export consolidated batch processing CSV summary |
+| `GET /health` | `GET` | API health check endpoint |
 
-Full interactive docs at `/docs` once the backend is running (FastAPI
-auto-generates Swagger UI).
+---
 
-## Going from baseline to a real trained model
+## 🔬 Automated Tests
 
-The rule-based extractor (`RuleBasedExtractor` in
-`backend/app/pipeline/extract.py`) is a regex/keyword baseline — good enough
-to demo the whole pipeline instantly, but not accurate enough for production
-on varied real-world documents. To train and plug in a real model:
-
-**See [`training/README.md`](training/README.md) for the full walkthrough** —
-covers getting a free GPU (Colab/Kaggle), datasets (SROIE, CUAD), training
-LayoutLMv3 or fine-tuning SmolVLM with LoRA, evaluating per-field accuracy,
-and wiring the trained checkpoint back into the backend via
-`EXTRACTION_BACKEND=ml`.
-
-## Running tests
-```bash
+To run automated unit & pipeline integration tests:
+```powershell
 cd backend
-pytest -v
+python -m pytest tests/ -v
 ```
 
-## Pushing to GitHub
-```bash
-cd invoice-legal-extraction
-git init
-git add .
-git commit -m "Initial commit: invoice & legal document extraction pipeline"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo>.git
-git push -u origin main
-```
-Model checkpoints are excluded via `.gitignore` (too large for git) —
-push them to Hugging Face Hub, Git LFS, or keep them on Google Drive instead,
-and document the checkpoint URL/path in your own fork's README.
+---
 
-## Notes & limitations
-- The bundled extractor is rule-based on purpose, so the project is runnable
-  without any model download or GPU. Expect it to correctly grab clearly
-  labeled fields (`Invoice Number:`, `Grand Total:`, etc.) but to need the
-  trained model for messy/varied real-world layouts.
-- OCR quality depends on scan quality; very low-DPI or heavily skewed scans
-  will show up as low-confidence fields flagged `needs_review`.
-- `doc_type` is passed explicitly today; a production version would add a
-  classifier step to auto-detect invoice vs. contract vs. other.
+## 🧠 Training Custom ML Models
+
+For training deep learning models (LayoutLMv3 / SmolVLM) on Google Colab or Kaggle GPUs:
+- Check the complete guide in [`training/README.md`](training/README.md).
+- Switch the backend in `backend/app/config.py` from `rules` to `ml` once checkpoints are generated.
+
+---
+
+## 📄 License
+This project is open-source and available under the [MIT License](LICENSE).
