@@ -1,216 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DocuExtract AI · Multimodal Invoice & Legal Extraction Pipeline</title>
-  <meta name="description" content="Enterprise document extraction platform utilizing OCR, layout intelligence, and NLP heuristics to extract structured entities from invoices and legal agreements." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Invoice & Legal Document Extraction</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-container">
-    <!-- Navbar -->
-    <header class="navbar">
-      <div class="brand">
-        <div class="brand-logo">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-        </div>
-        <div>
-          <span class="brand-title">DocuExtract <span class="badge-ai">PRO</span></span>
-          <span class="brand-sub">Enterprise Document Intelligence Engine</span>
+  <div class="app">
+    <header>
+      <div class="header-top">
+        <h1>📄 Invoice &amp; Legal Document Extraction</h1>
+        <div class="header-links">
+          <a href="/docs" target="_blank" class="head-link">API Docs</a>
+          <a href="https://github.com/Shyamsundar2203/invoice-legal-extraction" target="_blank" class="head-link">GitHub</a>
         </div>
       </div>
-
-      <div class="nav-links">
-        <div class="api-status-pill">
-          <span class="pulse-dot"></span>
-          <span id="api-status-text">Engine Online</span>
-        </div>
-        <a href="/docs" target="_blank" class="nav-btn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          OpenAPI Docs
-        </a>
-        <a href="https://github.com/Shyamsundar2203/invoice-legal-extraction" target="_blank" class="nav-btn github-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub Repo
-        </a>
-      </div>
+      <p class="subtitle">AI-based multimodal document processing — OCR + layout + NLP extraction</p>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-layout">
-      <!-- Upload Panel -->
-      <section class="card upload-card">
-        <div class="card-header">
-          <h2>Upload Financial or Legal Document</h2>
-          <p class="card-desc">Supported Formats: PDF, PNG, JPG, JPEG, TIFF (Max 25MB)</p>
-        </div>
-
+    <main>
+      <section class="upload-card">
         <form id="upload-form">
-          <div class="dropzone" id="dropzone">
+          <label class="dropzone" id="dropzone">
             <input type="file" id="file-input" accept=".pdf,.png,.jpg,.jpeg,.tiff" hidden />
-            <div class="dropzone-content">
-              <div class="upload-icon-circle">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-              </div>
-              <p class="drop-title" id="dropzone-text">Drag &amp; drop document here, or <span class="browse-link">browse files</span></p>
-              <p class="drop-sub" id="dropzone-sub">Invoices, Receipts, Master Service Agreements, NDAs &amp; Commercial Contracts</p>
-            </div>
-            <div id="file-preview-pill" class="file-preview-pill" hidden>
-              <span id="selected-filename">document.png</span>
-              <button type="button" id="clear-file-btn" class="clear-file-btn" title="Remove file">&times;</button>
-            </div>
+            <span id="dropzone-text">Click or drag a file here (PDF / PNG / JPG)</span>
+          </label>
+
+          <div class="doc-type-toggle">
+            <label><input type="radio" name="doc_type" value="invoice" checked /> Invoice</label>
+            <label><input type="radio" name="doc_type" value="contract" /> Legal Contract</label>
           </div>
 
-          <!-- Document Type Selector -->
-          <div class="doc-type-selector">
-            <span class="selector-label">Target Schema:</span>
-            <div class="toggle-group">
-              <label class="toggle-option active" id="label-invoice">
-                <input type="radio" name="doc_type" value="invoice" checked />
-                <span class="icon">🧾</span>
-                <span>Invoice / Receipt</span>
-              </label>
-              <label class="toggle-option" id="label-contract">
-                <input type="radio" name="doc_type" value="contract" />
-                <span class="icon">📜</span>
-                <span>Legal Agreement / Contract</span>
-              </label>
-            </div>
+          <div class="sample-actions">
+            <span class="sample-text">Quick Samples:</span>
+            <button type="button" class="btn-sample" id="sample-invoice-btn">⚡ Sample Invoice</button>
+            <button type="button" class="btn-sample" id="sample-contract-btn">📜 Sample Contract</button>
           </div>
 
-          <!-- Quick Samples Bar -->
-          <div class="samples-bar">
-            <span class="samples-label">Quick Test Sample:</span>
-            <button type="button" class="sample-chip" id="sample-invoice-btn">
-              ⚡ Load Sample Invoice
-            </button>
-            <button type="button" class="sample-chip" id="sample-contract-btn">
-              📜 Load Sample Contract
-            </button>
-          </div>
-
-          <button type="submit" id="submit-btn" class="submit-button">
-            <span class="btn-text">Extract Document Entities</span>
-            <div class="spinner" id="btn-spinner" hidden></div>
-          </button>
+          <button type="submit" id="submit-btn">Extract Data</button>
         </form>
-
-        <div id="status-bar" class="status-bar" hidden>
-          <span id="status-message"></span>
-        </div>
+        <div id="status"></div>
       </section>
 
-      <!-- Results Panel -->
-      <section class="card results-card" id="results" hidden>
-        <!-- Results Header -->
-        <div class="results-header-bar">
-          <div class="doc-meta">
-            <h2 id="result-doc-name">sample_invoice.png</h2>
-            <div class="meta-tags">
-              <span class="meta-tag" id="meta-doc-type">Invoice</span>
-              <span class="meta-tag" id="meta-time">⏱️ 0 ms</span>
-              <span class="meta-tag" id="meta-currency">Currency: USD ($)</span>
-            </div>
+      <section class="results-card" id="results" hidden>
+        <div class="results-header">
+          <div>
+            <h2>Extraction Result</h2>
+            <div id="doc-meta-info" class="doc-meta-info"></div>
           </div>
-
-          <div class="header-actions">
+          <div class="header-btns">
             <div id="confidence-badge" class="badge"></div>
-            <button type="button" id="export-csv-btn" class="action-btn" title="Export Extracted Table to CSV">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Export CSV
-            </button>
-            <a id="overlay-pdf-btn" href="#" target="_blank" class="action-btn pdf-btn" title="Download Bounding Box PDF">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              Overlay PDF
-            </a>
-            <button type="button" id="copy-json-btn" class="action-btn" title="Copy raw JSON">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              Copy JSON
-            </button>
+            <button type="button" id="export-csv-btn" class="btn-action">Export CSV</button>
+            <button type="button" id="copy-json-btn" class="btn-action">Copy JSON</button>
           </div>
         </div>
 
-        <!-- Advanced Analytics Banner (Math Check / Risk Audit) -->
-        <div id="analytics-banner" class="analytics-banner">
-          <!-- Dynamically populated -->
-        </div>
+        <div id="math-banner" class="math-banner" hidden></div>
 
-        <!-- Navigation Tabs -->
-        <div class="tab-nav">
-          <button type="button" class="tab-btn active" data-tab="entities-view">Structured Entities</button>
-          <button type="button" class="tab-btn" data-tab="tables-view" id="tab-btn-tables">Line Items &amp; Clauses</button>
-          <button type="button" class="tab-btn" data-tab="json-view">Raw JSON Contract</button>
-          <button type="button" class="tab-btn" data-tab="ocr-view">Optical OCR Stream</button>
-        </div>
+        <div class="results-grid">
+          <div>
+            <h3>Structured Fields</h3>
+            <table id="fields-table"><tbody></tbody></table>
 
-        <!-- Tab 1: Structured Entities -->
-        <div class="tab-content active" id="entities-view">
-          <div class="entities-grid" id="fields-container">
-            <!-- Injected via app.js -->
-          </div>
-        </div>
+            <h3 id="items-title" hidden>Line Items</h3>
+            <table id="items-table" hidden>
+              <thead>
+                <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
 
-        <!-- Tab 2: Tables & Clauses -->
-        <div class="tab-content" id="tables-view">
-          <div id="line-items-section">
-            <h3 class="section-title">Extracted Tabular Items</h3>
-            <div class="table-container">
-              <table class="data-table" id="items-table">
-                <thead>
-                  <tr>
-                    <th>Item Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                    <th>Confidence</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
+            <h3 id="clauses-title" hidden>Detected Clauses &amp; Risk Flags</h3>
+            <div id="clauses-list"></div>
           </div>
 
-          <div id="clauses-section" hidden>
-            <h3 class="section-title">Detected Legal Clauses &amp; Risk Flags</h3>
-            <div id="contract-risk-summary" class="risk-summary-box"></div>
-            <div class="clauses-grid" id="clauses-list"></div>
+          <div>
+            <h3>Raw JSON</h3>
+            <pre id="raw-json"></pre>
+            <a id="overlay-link" href="#" target="_blank" hidden>⬇ Download overlay PDF</a>
           </div>
-        </div>
-
-        <!-- Tab 3: Raw JSON -->
-        <div class="tab-content" id="json-view">
-          <pre class="code-block" id="raw-json"></pre>
-        </div>
-
-        <!-- Tab 4: OCR Text -->
-        <div class="tab-content" id="ocr-view">
-          <pre class="code-block ocr-text" id="raw-ocr-text"></pre>
         </div>
       </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>DocuExtract AI Enterprise Pipeline · Tesseract 5.0 OCR + LayoutLMv3 Adapter</p>
-      <p class="footer-meta">Server Endpoint: <code id="api-base-display">http://localhost:8000</code></p>
+    <footer>
+      <p>Backend: <code id="api-base-display">http://127.0.0.1:8000</code></p>
     </footer>
   </div>
 
-  <div id="toast" class="toast">Action completed successfully!</div>
+  <div id="toast" class="toast">JSON copied to clipboard!</div>
 
   <script src="app.js"></script>
 </body>
