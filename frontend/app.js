@@ -1,4 +1,4 @@
-// DocuExtract AI · Frontend Client Logic
+// DocuExtract AI · Frontend Client Controller
 const API_BASE = window.location.origin && window.location.origin.startsWith("http")
   ? window.location.origin
   : "http://localhost:8000";
@@ -8,8 +8,6 @@ document.getElementById("api-base-display").textContent = API_BASE;
 const form = document.getElementById("upload-form");
 const fileInput = document.getElementById("file-input");
 const dropzone = document.getElementById("dropzone");
-const dropzoneText = document.getElementById("dropzone-text");
-const dropzoneSub = document.getElementById("dropzone-sub");
 const filePreviewPill = document.getElementById("file-preview-pill");
 const selectedFilename = document.getElementById("selected-filename");
 const clearFileBtn = document.getElementById("clear-file-btn");
@@ -19,10 +17,11 @@ const statusBar = document.getElementById("status-bar");
 const statusMessage = document.getElementById("status-message");
 const resultsSection = document.getElementById("results");
 const sampleInvoiceBtn = document.getElementById("sample-invoice-btn");
+const sampleContractBtn = document.getElementById("sample-contract-btn");
 
 let currentSelectedFile = null;
 
-// Document Type Toggle styling
+// Document Type Toggle
 document.querySelectorAll('input[name="doc_type"]').forEach((radio) => {
   radio.addEventListener("change", (e) => {
     document.querySelectorAll(".toggle-option").forEach((opt) => opt.classList.remove("active"));
@@ -30,7 +29,7 @@ document.querySelectorAll('input[name="doc_type"]').forEach((radio) => {
   });
 });
 
-// Dropzone interactions
+// Dropzone Drag & Drop
 dropzone.addEventListener("click", (e) => {
   if (e.target !== clearFileBtn && !clearFileBtn.contains(e.target)) {
     fileInput.click();
@@ -73,74 +72,55 @@ function handleFileSelect(file) {
   dropzone.querySelector(".dropzone-content").hidden = true;
 }
 
-// 1-Click Test Sample Loader
-sampleInvoiceBtn.addEventListener("click", async () => {
-  setStatus("Loading bundled sample invoice…");
-  try {
-    const response = await fetch("/static/../data/sample/sample_invoice.png").catch(() => null);
-    // Alternatively create a synthetic file from sample base
-    const res = await fetch("/sample_invoice.png").catch(() => null);
-    
-    // Set Invoice doc type
-    document.querySelector('input[name="doc_type"][value="invoice"]').checked = true;
-    document.getElementById("label-invoice").classList.add("active");
-    document.getElementById("label-contract").classList.remove("active");
+// 1-Click Sample Invoice Loader
+if (sampleInvoiceBtn) {
+  sampleInvoiceBtn.addEventListener("click", async () => {
+    try {
+      setStatus("Loading sample invoice fixture…");
+      const res = await fetch("/sample_invoice.png");
+      if (!res.ok) throw new Error("Could not fetch sample_invoice.png");
+      const blob = await res.blob();
+      const file = new File([blob], "sample_invoice.png", { type: "image/png" });
+      handleFileSelect(file);
 
-    // Automatically trigger sample extraction
-    triggerSampleExtraction();
-  } catch (err) {
-    setStatus("Click browse to select data/sample/sample_invoice.png", true);
-  }
-});
-
-async function triggerSampleExtraction() {
-  submitBtn.disabled = true;
-  btnSpinner.hidden = false;
-  setStatus("Processing document — running Tesseract OCR + entity extraction…");
-  resultsSection.hidden = true;
-
-  try {
-    // If backend has sample endpoint or direct call
-    const res = await fetch(`${API_BASE}/extract?doc_type=invoice`, {
-      method: "POST",
-      body: (() => {
-        const fd = new FormData();
-        if (currentSelectedFile) {
-          fd.append("file", currentSelectedFile);
-        } else {
-          // Send a demo blob or standard trigger
-          const blob = new Blob(["sample invoice"], { type: "image/png" });
-          fd.append("file", currentSelectedFile || new File([blob], "sample_invoice.png", { type: "image/png" }));
-        }
-        return fd;
-      })(),
-    });
-
-    if (!res.ok) {
-      // Fallback: If no file was uploaded, instruct user to pick sample
-      if (!currentSelectedFile) {
-        throw new Error("Please select the sample file: data/sample/sample_invoice.png");
-      }
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || `Server error (${res.status})`);
+      // Select Invoice radio
+      document.querySelector('input[name="doc_type"][value="invoice"]').checked = true;
+      document.getElementById("label-invoice").classList.add("active");
+      document.getElementById("label-contract").classList.remove("active");
+      setStatus("Sample invoice loaded! Click 'Extract Document Entities' below.");
+    } catch (err) {
+      setStatus("Error loading sample: " + err.message, true);
     }
+  });
+}
 
-    const result = await res.json();
-    renderResult(result);
-    setStatus(`Completed successfully in ${result.processing_time_ms.toFixed(0)} ms.`);
-  } catch (err) {
-    setStatus(`Error: ${err.message}`, true);
-  } finally {
-    submitBtn.disabled = false;
-    btnSpinner.hidden = true;
-  }
+// 1-Click Sample Contract Loader
+if (sampleContractBtn) {
+  sampleContractBtn.addEventListener("click", async () => {
+    try {
+      setStatus("Loading sample contract fixture…");
+      const res = await fetch("/sample_contract.png");
+      if (!res.ok) throw new Error("Could not fetch sample_contract.png");
+      const blob = await res.blob();
+      const file = new File([blob], "sample_contract.png", { type: "image/png" });
+      handleFileSelect(file);
+
+      // Select Contract radio
+      document.querySelector('input[name="doc_type"][value="contract"]').checked = true;
+      document.getElementById("label-contract").classList.add("active");
+      document.getElementById("label-invoice").classList.remove("active");
+      setStatus("Sample contract loaded! Click 'Extract Document Entities' below.");
+    } catch (err) {
+      setStatus("Error loading sample: " + err.message, true);
+    }
+  });
 }
 
 // Form Submission
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!currentSelectedFile) {
-    setStatus("Please choose or drag a document first.", true);
+    setStatus("Please choose or drag a document first, or click a sample button.", true);
     return;
   }
 
@@ -164,7 +144,7 @@ form.addEventListener("submit", async (e) => {
     }
     const result = await res.json();
     renderResult(result);
-    setStatus(`Extracted ${Object.keys(result.data).length} entity fields in ${result.processing_time_ms.toFixed(0)} ms.`);
+    setStatus(`Extraction complete in ${result.processing_time_ms.toFixed(0)} ms.`);
   } catch (err) {
     setStatus(`Error: ${err.message}`, true);
   } finally {
@@ -185,7 +165,8 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
     document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(".tab-content").forEach((c) => c.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById(btn.dataset.tab).classList.add("active");
+    const target = document.getElementById(btn.dataset.tab);
+    if (target) target.classList.add("active");
   });
 });
 
@@ -253,7 +234,7 @@ function renderResult(result) {
     container.appendChild(card);
   }
 
-  // Line items
+  // Line items (Invoices)
   const itemsSection = document.getElementById("line-items-section");
   const itemsTable = document.getElementById("items-table");
   const itemsBody = itemsTable.querySelector("tbody");
@@ -276,7 +257,7 @@ function renderResult(result) {
     itemsSection.hidden = true;
   }
 
-  // Contract Clauses
+  // Contract Clauses (Legal Contracts)
   const clausesSection = document.getElementById("clauses-section");
   const clausesList = document.getElementById("clauses-list");
   clausesList.innerHTML = "";
