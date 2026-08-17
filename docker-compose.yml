@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATA_DIR=/data
+      - EXTRACTION_BACKEND=rules
+      - OCR_LANG=eng
+    restart: unless-stopped
+
+  frontend:
+    image: python:3.11-slim
+    working_dir: /site
+    volumes:
+      - ./frontend:/site
+    command: python -m http.server 5173
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped

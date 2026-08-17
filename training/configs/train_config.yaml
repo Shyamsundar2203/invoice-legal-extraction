@@ -1,0 +1,29 @@
+# Reference hyperparameters for both training scripts.
+# Override any of these via CLI flags on train_layoutlmv3.py / train_smolvlm_invoice.py
+
+layoutlmv3:
+  model_id: microsoft/layoutlmv3-base
+  epochs: 15
+  batch_size: 4
+  learning_rate: 5.0e-5
+  max_seq_length: 512
+  eval_strategy: epoch
+  early_stopping_patience: 3
+
+smolvlm:
+  model_id: HuggingFaceTB/SmolVLM-256M-Instruct   # or -500M-Instruct for more accuracy
+  epochs: 3
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules: [q_proj, v_proj, k_proj, o_proj]
+
+data:
+  train_val_split: 0.85
+  seed: 42
+
+review_threshold: 0.85   # fields below this confidence get flagged for human review

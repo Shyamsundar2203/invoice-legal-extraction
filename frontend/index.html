@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Invoice & Legal Document Extraction</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>📄 Invoice &amp; Legal Document Extraction</h1>
+      <p class="subtitle">AI-based multimodal document processing — OCR + NLP</p>
+    </header>
+
+    <main>
+      <section class="upload-card">
+        <form id="upload-form">
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="file-input" accept=".pdf,.png,.jpg,.jpeg,.tiff" hidden />
+            <span id="dropzone-text">Click or drag a file here (PDF / PNG / JPG)</span>
+          </label>
+
+          <div class="doc-type-toggle">
+            <label><input type="radio" name="doc_type" value="invoice" checked /> Invoice</label>
+            <label><input type="radio" name="doc_type" value="contract" /> Legal Contract</label>
+          </div>
+
+          <button type="submit" id="submit-btn">Extract Data</button>
+        </form>
+        <div id="status"></div>
+      </section>
+
+      <section class="results-card" id="results" hidden>
+        <div class="results-header">
+          <h2>Extraction Result</h2>
+          <div id="confidence-badge" class="badge"></div>
+        </div>
+
+        <div class="results-grid">
+          <div>
+            <h3>Structured Fields</h3>
+            <table id="fields-table"><tbody></tbody></table>
+            <h3 id="items-title" hidden>Line Items</h3>
+            <table id="items-table" hidden><thead>
+              <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+            </thead><tbody></tbody></table>
+            <h3 id="clauses-title" hidden>Detected Clauses</h3>
+            <div id="clauses-list"></div>
+          </div>
+          <div>
+            <h3>Raw JSON</h3>
+            <pre id="raw-json"></pre>
+            <a id="overlay-link" href="#" target="_blank" hidden>⬇ Download overlay PDF</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Backend: <code id="api-base-display"></code> — edit <code>API_BASE</code> in app.js if different.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

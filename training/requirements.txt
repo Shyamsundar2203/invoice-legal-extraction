@@ -1,0 +1,12 @@
+# Install in Colab/Kaggle (GPU runtime) before running the training scripts:
+#   pip install -r training/requirements.txt
+transformers>=4.44.0
+accelerate>=0.33.0
+peft>=0.12.0
+bitsandbytes>=0.43.0
+datasets>=2.20.0
+seqeval>=1.2.2
+pytesseract>=0.3.13
+Pillow>=10.4.0
+pandas>=2.2.2
+torch>=2.3.0

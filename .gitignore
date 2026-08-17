@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Data (keep folder structure, ignore contents)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+data/sample/*.png
+!data/sample/.gitkeep
+!data/sample/sample_invoice.png
+
+# Model checkpoints (too large for git; use Drive/HF Hub/Git LFS instead)
+training/checkpoints/
+*.pt
+*.bin
+*.safetensors
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Env
+.env

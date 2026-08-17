@@ -1,0 +1,14 @@
+# Versions are left unpinned (or minimum-pinned) on purpose so pip picks the
+# latest pre-built wheel available for whatever Python version you have
+# (3.10 - 3.13+). Pinning exact old versions caused build-from-source
+# failures on newer Python installs (missing C/C++ compiler on Windows).
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+pydantic>=2.9
+pytesseract>=0.3.13
+opencv-python-headless>=4.10
+Pillow>=10.4
+PyMuPDF>=1.24
+numpy>=1.26
+pandas>=2.2
