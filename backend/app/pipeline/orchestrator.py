@@ -55,6 +55,11 @@ def process_document(file_path: str, doc_type: str = "invoice") -> ProcessingRes
     raw_text = ocr_mod.words_to_text(all_words)
     elapsed_ms = (time.perf_counter() - start) * 1000
 
+    ocr_words_data = [
+        {"text": w.text, "conf": round(w.conf, 2), "bbox": [round(c, 1) for c in w.bbox]}
+        for w in all_words
+    ]
+
     result = ProcessingResult(
         document_id=document_id,
         filename=filename,
@@ -64,6 +69,7 @@ def process_document(file_path: str, doc_type: str = "invoice") -> ProcessingRes
         needs_review=needs_review,
         data=json.loads(data.model_dump_json()),
         overlay_pdf_path=overlay_path,
+        ocr_words=ocr_words_data,
         raw_ocr_text=raw_text,
     )
 

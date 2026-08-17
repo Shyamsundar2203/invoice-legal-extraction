@@ -757,6 +757,130 @@ body {
   transform: translateY(0);
 }
 
+/* ==========================================================================
+   Analytics Banner, Math Check & Risk Audit Styles
+   ========================================================================== */
+.analytics-banner {
+  margin-bottom: 20px;
+}
+
+.banner-card {
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.banner-card.math-ok {
+  background: var(--success-subtle);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.banner-card.math-warn {
+  background: var(--warning-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-icon {
+  font-size: 1.2rem;
+}
+
+.banner-title {
+  font-weight: 700;
+  display: block;
+}
+
+.banner-desc {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.banner-metrics {
+  display: flex;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.metric-pill {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* Risk Summary */
+.risk-summary-box {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.risk-level-tag {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.risk-level-high { background: var(--error-subtle); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.4); }
+.risk-level-medium { background: var(--warning-subtle); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
+.risk-level-low { background: var(--success-subtle); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+
+.risk-flag-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+}
+
+.risk-flag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.risk-clause-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.risk-reason {
+  font-size: 0.85rem;
+  color: #fca5a5;
+  margin-bottom: 6px;
+}
+
+.risk-rec {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 10px;
+  border-radius: 4px;
+  border-left: 2px solid var(--primary);
+}
+
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
@@ -771,3 +895,4 @@ body {
     align-items: flex-start;
   }
 }
+
