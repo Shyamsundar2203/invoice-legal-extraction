@@ -75,13 +75,14 @@ def denoise_and_binarize(image: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(binarized, cv2.COLOR_GRAY2RGB)
 
 
-def preprocess_image(pil_image: Image.Image, clean: bool = True) -> Image.Image:
+def preprocess_image(pil_image: Image.Image, clean: bool = False) -> Image.Image:
     """Full preprocessing pipeline: PIL in -> PIL out."""
     arr = np.array(pil_image)
     arr = deskew(arr)
     if clean:
         arr = denoise_and_binarize(arr)
     return Image.fromarray(arr)
+
 
 
 def load_and_preprocess(path: str, dpi: int = 300) -> List[Image.Image]:

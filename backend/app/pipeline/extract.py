@@ -55,23 +55,22 @@ PATTERNS = {
 
 CONTRACT_PATTERNS = {
     "effective_date": re.compile(
-        r"effective\s*(?:date|as of)\s*[:\-]?\s*"
+        r"(?:effective\s*(?:date|as\s*of)?|dated)\s*[:\-]?\s*"
         r"([A-Za-z]+\s+\d{1,2},?\s+\d{4}|\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})",
         re.I,
     ),
     "governing_law": re.compile(
-        r"governed by the laws of\s+([A-Za-z ,]+?)(?:\.|,|\n)", re.I
+        r"governed\s+by\s+(?:the\s+)?laws?\s*of\s+([A-Za-z ,]+?)(?:\.|,|\n|$)", re.I
     ),
     "term_duration": re.compile(
-        r"term of (?:this agreement (?:shall be|is) )?"
-        r"(\d+\s*(?:day|month|year)s?)",
+        r"(?:term\s*(?:duration)?\s*[:\-]?\s*(?:of\s*(?:this\s*agreement\s*)?(?:shall\s*be|is|shal\s*be)\s*)?|term\s*of\s*(?:this\s*agreement\s*(?:shall\s*be|is|shal\s*be)\s*)?)(\d+\s*(?:day|month|year)s?)",
         re.I,
     ),
 }
 
 CLAUSE_KEYWORDS = {
     "termination": ["terminate", "termination"],
-    "confidentiality": ["confidential", "non-disclosure"],
+    "confidentiality": ["confidential", "non-disclosure", "secret"],
     "indemnification": ["indemnify", "indemnification", "hold harmless"],
     "governing_law": ["governing law", "jurisdiction"],
     "payment_terms": ["payment terms", "invoice", "net 30", "net 60"],
@@ -105,13 +104,11 @@ def _find_name_near_keyword(text: str, keyword: str) -> Optional[str]:
     return None
 
 
-
 class RuleBasedExtractor:
     """Fast, dependency-free baseline extractor using regex + keyword rules."""
 
     def extract_invoice(self, words: List[OCRWord]) -> InvoiceData:
         text = words_to_text(words)
-        avg_conf = sum(w.conf for w in words) / len(words) if words else 0.0
 
         data = InvoiceData(
             invoice_number=_field_from_match(PATTERNS["invoice_number"].search(text)),
@@ -177,16 +174,31 @@ class RuleBasedExtractor:
         )
 
         parties = re.findall(
-            r'"([A-Z][A-Za-z0-9 ,\.&]+)"\s*\((?:the\s*)?"?(?:Party|Client|Vendor|Company)',
+            r'["“]?([A-Za-z0-9 ,\.&]{3,40}?)(?:["”]|:)?\s*\(\s*(?:the\s*)?(?:Party\s*[AB]|Client|Vendor|Company|Customer)\b',
             text,
+            re.I,
         )
-        if len(parties) >= 1:
-            data.party_a = FieldValue(value=parties[0], confidence=0.6)
-        if len(parties) >= 2:
-            data.party_b = FieldValue(value=parties[1], confidence=0.6)
+        if not parties:
+            m_between = re.search(r"by\s*and\s*between\s*[:\-]?\s*([A-Za-z0-9 ,\.&]+?)\s+(?:and|&)\s+([A-Za-z0-9 ,\.&]+?)(?:\.|\n|\()", text, re.I)
+            if m_between:
+                parties = [m_between.group(1).strip(), m_between.group(2).strip()]
+
+        # Clean party strings and remove stop words
+        stop_words = {"the", "and", "or", "of", "in", "by", "for", "party a", "party b"}
+        cleaned_parties = []
+        for p in parties:
+            clean = re.sub(r'^[^\w]+|[^\w\.]+$', '', p).strip()
+            if len(clean) > 2 and clean.lower() not in stop_words:
+                cleaned_parties.append(clean)
+
+        if len(cleaned_parties) >= 1:
+            data.party_a = FieldValue(value=cleaned_parties[0], confidence=0.65)
+        if len(cleaned_parties) >= 2:
+            data.party_b = FieldValue(value=cleaned_parties[1], confidence=0.65)
 
         data.clauses = self._extract_clauses(text)
         return data
+
 
     def _extract_clauses(self, text: str) -> List[ClauseSpan]:
         """

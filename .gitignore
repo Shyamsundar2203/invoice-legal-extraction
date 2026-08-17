@@ -14,6 +14,7 @@ data/processed/*
 data/sample/*.png
 !data/sample/.gitkeep
 !data/sample/sample_invoice.png
+!data/sample/sample_contract.png
 
 # Model checkpoints (too large for git; use Drive/HF Hub/Git LFS instead)
 training/checkpoints/
