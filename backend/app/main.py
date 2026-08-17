@@ -1,7 +1,9 @@
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import batch, extract
 
@@ -33,10 +35,8 @@ async def health():
     return {"status": "ok"}
 
 
-@app.get("/")
-async def root():
-    return {
-        "message": "Invoice & Legal Document Extraction API",
-        "docs": "/docs",
-        "endpoints": ["/extract", "/batch", "/batch/summary.csv", "/health"],
-    }
+# Mount frontend static web interface
+frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+

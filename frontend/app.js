@@ -1,5 +1,7 @@
-// Point this at your running backend (see backend/README or docker-compose.yml).
-const API_BASE = "http://localhost:8000";
+// Point this at your running backend (defaults to current origin).
+const API_BASE = window.location.origin && window.location.origin.startsWith("http")
+  ? window.location.origin
+  : "http://localhost:8000";
 
 document.getElementById("api-base-display").textContent = API_BASE;
 
