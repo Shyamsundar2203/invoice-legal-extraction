@@ -5,12 +5,12 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Tesseract](https://img.shields.io/badge/OCR-Tesseract%205.0%2B-5C8DBC?style=for-the-badge)](https://github.com/tesseract-ocr/tesseract)
-[![PyTorch / HuggingFace](https://img.shields.io/badge/ML%20Backend-LayoutLMv3%20%2F%20SmolVLM-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/)
+[![Open In Colab](https://img.shields.io/badge/Google_Colab-Open_Notebook-F9AB00?style=for-the-badge&logo=googlecolab&logoColor=white)](https://colab.research.google.com/github/Shyamsundar2203/invoice-legal-extraction/blob/main/DocuExtract_AI_Colab.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 **An intelligent, production-ready document extraction platform designed to ingest messy, multi-format financial invoices and complex legal agreements, converting unstructured scans into validated JSON schemas, bounding-box visual overlays, and human-in-the-loop audit logs.**
 
-[🚀 Live Interactive Demo](#-live-web-demo--quick-start) • [🏛️ Architecture](#%EF%B8%8F-pipeline-architecture) • [📡 API Reference](#-rest-api-contract) • [🧠 ML Training Guide](#-fine-tuning--ml-training) • [🌐 Cloud Deployment](#-free-global-public-link-sharing)
+[🚀 1-Click Google Colab](#-google-colab-1-click-run) • [💻 Live Local Demo](#-live-web-demo--quick-start) • [🏛️ Architecture](#%EF%B8%8F-pipeline-architecture) • [📡 API Reference](#-rest-api-contract) • [🌐 Cloud Deployment](#-free-global-public-link-sharing)
 
 </div>
 
