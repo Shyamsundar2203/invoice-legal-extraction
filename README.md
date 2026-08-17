@@ -84,6 +84,7 @@ invoice-legal-extraction/
 │   ├── prepare_dataset.py     # SROIE & CUAD dataset formatters
 │   ├── evaluate.py            # Precision, Recall & F1 benchmark evaluator
 │   └── README.md              # Complete GPU training walkthrough
+├── DocuExtract_AI_Colab.ipynb # 🚀 1-Click Standalone Google Colab Notebook
 ├── run_app.bat                # ⚡ 1-Click Windows Launcher
 ├── docker-compose.yml         # Containerized production stack
 └── README.md                  # Project documentation
@@ -93,10 +94,21 @@ invoice-legal-extraction/
 
 ## 🚀 Live Web Demo & Quick Start
 
-### ⚡ Option A: 1-Click Windows Launcher (Fastest)
+### 🌐 Option 1: 1-Click Google Colab (No Setup / Zero-Install Cloud Run)
+
+Run the entire pipeline on a free cloud environment with a single click:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Shyamsundar2203/invoice-legal-extraction/blob/main/DocuExtract_AI_Colab.ipynb)
+
+* **Open Notebook**: [`DocuExtract_AI_Colab.ipynb`](DocuExtract_AI_Colab.ipynb)
+* **What's Included**: Automatic Tesseract OCR installation, Deskew/Denoise CV preprocessing, Invoice ledger math reconciliation, Contract liability risk auditor, and a live **Gradio Web App** with a shareable public URL (`share=True`).
+
+### ⚡ Option 2: 1-Click Windows Launcher (Fastest Local Run)
 If you are on Windows, simply double-click **[`run_app.bat`](run_app.bat)**:
 - Automatically boots the unified FastAPI backend & frontend at **`http://127.0.0.1:8000`**
 - Opens the application directly in your browser.
+
+### 🐳 Option 3: Docker & Docker Compose
 
 ---
 
